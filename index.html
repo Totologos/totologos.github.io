@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulaire de réservation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    /* Style du tableau */
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f1f3f4;
+      font-weight: 500;
+    }
+
+    td input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+    }
+
+    .container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #202124;
+      font-size: 24px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 6px;
+      font-weight: 500;
+      color: #5f6368;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 14px;
+      transition: border 0.3s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #1a73e8;
+      outline: none;
+    }
+
+    button {
+      background-color: #1a73e8;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 15px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #1558c4;
+    }
+
+    #msg {
+      margin-top: 20px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Réservation d’un créneau</h2>
+        
+        <div id="loading">Chargement des créneaux en cours...</div>
+        
+        <form id="form" style="display:none;">
+
+          <table id="reservation-table">
+            <thead>
+              <tr>
+                <th>Stand</th>
+                <th>1ère partie</th>
+                <th>Entracte</th>
+                <th>2e partie</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Caisse</td>
+                <td><input type="checkbox" name="caisse1" value="1ère partie"></td>
+                <td><input type="checkbox" name="caisse2" value="Entracte"></td>
+                <td><input type="checkbox" name="caisse3" value="2e partie"></td>
+              </tr>
+              <tr>
+                <td>Bar</td>
+                <td><input type="checkbox" name="bar1" value="1ère partie"></td>
+                <td><input type="checkbox" name="bar2" value="Entracte"></td>
+                <td><input type="checkbox" name="bar3" value="2e partie"></td>
+              </tr>
+              <tr>
+                <td>Restauration</td>
+                <td>3 crenaux dispo<br/><input type="checkbox" name="restauration1" value="1ère partie"></td>
+                <td><input type="checkbox" name="restauration2" value="Entracte"></td>
+                <td><input type="checkbox" name="restauration3" value="2e partie"></td>
+              </tr>
+            </tbody>
+          </table>
+
+            <label for="prenom">Prénom</label>
+            <input name="prenom" required>
+        
+            <label for="nom">Nom</label>
+            <input name="nom" required>
+        
+            <label for="email">Email</label>
+            <input name="email" type="email" required>
+        
+            <label for="q1">Activité préférée</label>
+            <input name="q1" required>
+        
+            <label for="q2">Commentaires</label>
+            <textarea name="q2"></textarea>
+        
+            <label for="creneau">Créneau disponible</label>
+            <select name="creneau" id="creneau" required></select>
+        
+            <button type="submit">Envoyer</button>
+        </form>
+        
+        <p id="msg"></p>
+    </div>
+  
+
+
+    <script>
+        const form = document.getElementById('form');
+        const msg = document.getElementById('msg');
+        const select = document.getElementById('creneau');
+        const loading = document.getElementById('loading');
+        const scriptURL = "https://script.google.com/macros/s/AKfycbzLGvEQokRJ2V87DtZx4XIhNLHx9JMdE0VAsKy_xHEM8TYv6kHFm71v7rQLySzP_yPX/exec"; // Remplace ici
+      
+        // Chargement des créneaux
+        window.onload = async () => {
+          try {
+            const response = await fetch(scriptURL); // GET
+            const slots = await response.json();
+      
+            if (slots.length === 0) {
+              loading.textContent = "Aucun créneau disponible pour le moment.";
+              return;
+            }
+      
+            slots.forEach(s => {
+              const option = document.createElement("option");
+              option.value = s;
+              option.textContent = s;
+              select.appendChild(option);
+            });
+      
+            // Affiche le formulaire une fois les créneaux chargés
+            loading.style.display = "none";
+            form.style.display = "block";
+      
+          } catch (err) {
+            loading.textContent = "Erreur lors du chargement des créneaux.";
+          }
+        };
+      
+        // Soumission du formulaire
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const data = new FormData(form);
+      
+          // Empêche double clic
+          form.querySelector("button").disabled = true;
+      
+          try {
+            const response = await fetch(scriptURL, {
+              method: 'POST',
+              body: data
+            });
+      
+            if (response.ok) {
+              form.style.display = "none";
+              msg.textContent = "Merci ! Votre réservation a bien été prise en compte.";
+              msg.style.color = "green";
+            } else {
+              throw new Error();
+            }
+      
+          } catch {
+            msg.textContent = "Erreur lors de l’envoi. Veuillez réessayer.";
+            msg.style.color = "red";
+            form.querySelector("button").disabled = false;
+          }
+        });
+      </script>
+      
+</body>
+</html>
+
+
+
+
+
+
+
+
