@@ -2,238 +2,117 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Formulaire de réservation</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: #f5f5f5;
-      display: flex;
-      justify-content: center;
-      padding: 40px;
-    }
-
-    /* Style du tableau */
-    table {
-      width: 100%;
-      margin: 20px 0;
-      border-collapse: collapse;
-      border: 1px solid #ddd;
-    }
-
-    th, td {
-      padding: 12px;
-      text-align: center;
-      border: 1px solid #ddd;
-    }
-
-    th {
-      background-color: #f1f3f4;
-      font-weight: 500;
-    }
-
-    td input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-    }
-
-    .container {
-      background: white;
-      padding: 30px 40px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      max-width: 500px;
-      width: 100%;
-    }
-
-    h2 {
-      margin-top: 0;
-      color: #202124;
-      font-size: 24px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 10px;
-    }
-
-    label {
-      display: block;
-      margin: 16px 0 6px;
-      font-weight: 500;
-      color: #5f6368;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #dadce0;
-      border-radius: 4px;
-      box-sizing: border-box;
-      font-size: 14px;
-      transition: border 0.3s;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: #1a73e8;
-      outline: none;
-    }
-
-    button {
-      background-color: #1a73e8;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 4px;
-      font-size: 15px;
-      margin-top: 20px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: #1558c4;
-    }
-
-    #msg {
-      margin-top: 20px;
-      font-weight: 500;
-    }
-  </style>
+  <title>Réservation de créneaux</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Réservation d’un créneau</h2>
-        
-        <div id="loading">Chargement des créneaux en cours...</div>
-        
-        <form id="form" style="display:none;">
+  <h2>Réservation des créneaux</h2>
 
-          <table id="reservation-table">
-            <thead>
-              <tr>
-                <th>Stand</th>
-                <th>1ère partie</th>
-                <th>Entracte</th>
-                <th>2e partie</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Caisse</td>
-                <td><input type="checkbox" name="caisse1" value="1ère partie"></td>
-                <td><input type="checkbox" name="caisse2" value="Entracte"></td>
-                <td><input type="checkbox" name="caisse3" value="2e partie"></td>
-              </tr>
-              <tr>
-                <td>Bar</td>
-                <td><input type="checkbox" name="bar1" value="1ère partie"></td>
-                <td><input type="checkbox" name="bar2" value="Entracte"></td>
-                <td><input type="checkbox" name="bar3" value="2e partie"></td>
-              </tr>
-              <tr>
-                <td>Restauration</td>
-                <td>3 crenaux dispo<br/><input type="checkbox" name="restauration1" value="1ère partie"></td>
-                <td><input type="checkbox" name="restauration2" value="Entracte"></td>
-                <td><input type="checkbox" name="restauration3" value="2e partie"></td>
-              </tr>
-            </tbody>
-          </table>
+  <!-- Message d’attente -->
+  <div id="loading-message">Chargement des créneaux...</div>
 
-            <label for="prenom">Prénom</label>
-            <input name="prenom" required>
-        
-            <label for="nom">Nom</label>
-            <input name="nom" required>
-        
-            <label for="email">Email</label>
-            <input name="email" type="email" required>
-        
-            <label for="q1">Activité préférée</label>
-            <input name="q1" required>
-        
-            <label for="q2">Commentaires</label>
-            <textarea name="q2"></textarea>
-        
-            <label for="creneau">Créneau disponible</label>
-            <select name="creneau" id="creneau" required></select>
-        
-            <button type="submit">Envoyer</button>
-        </form>
-        
-        <p id="msg"></p>
+  <!-- Contenu caché pendant le chargement -->
+  <form id="reservation-form" style="display:none;">
+    <table id="reservation-table">
+      <thead>
+        <tr>
+          <th>Stand</th>
+          <th>1ère partie</th>
+          <th>Entracte</th>
+          <th>2e partie</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <!-- Rempli dynamiquement -->
+      </tbody>
+    </table>
+    <div id="user-info">
+      <input type="text" name="nom" placeholder="Nom" required>
+      <input type="text" name="prenom" placeholder="Prénom" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <button type="submit">Réserver</button>
     </div>
-  
+  </form>
 
+  <script>
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbxER5nolQcpLtEF7Kb728MRkssbt6r72FYDWJP6QXynqZdP_ls-R-79OkZcCksq69BJ/exec"; // Remplace par ton URL
 
-    <script>
-        const form = document.getElementById('form');
-        const msg = document.getElementById('msg');
-        const select = document.getElementById('creneau');
-        const loading = document.getElementById('loading');
-        const scriptURL = "https://script.google.com/macros/s/AKfycbzLGvEQokRJ2V87DtZx4XIhNLHx9JMdE0VAsKy_xHEM8TYv6kHFm71v7rQLySzP_yPX/exec"; // Remplace ici
-      
-        // Chargement des créneaux
-        window.onload = async () => {
-          try {
-            const response = await fetch(scriptURL); // GET
-            const slots = await response.json();
-      
-            if (slots.length === 0) {
-              loading.textContent = "Aucun créneau disponible pour le moment.";
-              return;
-            }
-      
-            slots.forEach(s => {
-              const option = document.createElement("option");
-              option.value = s;
-              option.textContent = s;
-              select.appendChild(option);
-            });
-      
-            // Affiche le formulaire une fois les créneaux chargés
-            loading.style.display = "none";
-            form.style.display = "block";
-      
-          } catch (err) {
-            loading.textContent = "Erreur lors du chargement des créneaux.";
-          }
-        };
-      
-        // Soumission du formulaire
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const data = new FormData(form);
-      
-          // Empêche double clic
-          form.querySelector("button").disabled = true;
-      
-          try {
-            const response = await fetch(scriptURL, {
-              method: 'POST',
-              body: data
-            });
-      
-            if (response.ok) {
-              form.style.display = "none";
-              msg.textContent = "Merci ! Votre réservation a bien été prise en compte.";
-              msg.style.color = "green";
+    const loadingMessage = document.getElementById("loading-message");
+    const reservationForm = document.getElementById("reservation-form");
+
+    // Affiche le message de chargement, cache le formulaire
+    loadingMessage.style.display = "block";
+    reservationForm.style.display = "none";
+
+    fetch(scriptUrl)
+      .then(res => res.json())
+      .then(data => {
+        buildTable(data);
+        // Une fois les données prêtes, cacher le message et afficher le formulaire
+        loadingMessage.style.display = "none";
+        reservationForm.style.display = "block";
+      })
+      .catch(error => {
+        loadingMessage.textContent = "Erreur de chargement des données.";
+        console.error("Erreur lors du chargement :", error);
+      });
+
+    function buildTable(data) {
+      const tableBody = document.getElementById("table-body");
+
+      const grouped = {};
+      data.forEach(item => {
+        if (!grouped[item.stand]) grouped[item.stand] = {};
+        if (!grouped[item.stand][item.partie]) grouped[item.stand][item.partie] = [];
+        grouped[item.stand][item.partie].push(item);
+      });
+
+      Object.keys(grouped).forEach(stand => {
+        const tr = document.createElement("tr");
+
+        const standCell = document.createElement("td");
+        standCell.textContent = stand;
+        tr.appendChild(standCell);
+
+        ["1ère partie", "Entracte", "2ieme partie"].forEach(partie => {
+          const td = document.createElement("td");
+          //td.classList.add("slot-cell");
+
+          const slots = grouped[stand][partie] || [];
+          firstEmpty = true
+          slots.forEach(slot => {
+            const div = document.createElement("div");
+            div.classList.add("sub-slot");
+            div.classList.add(slot.nom ? "taken" : "available");
+
+            if (slot.nom) {
+              div.textContent = `Réservé par ${slot.prenom} ${slot.nom}`;
             } else {
-              throw new Error();
+              div.textContent = `Libre #${slot.numero}`;
+              if(firstEmpty) {
+                firstEmpty = false;
+                const radio = document.createElement("input");
+                radio.type = "radio";
+                radio.name = `selectedSlot ${partie}`;
+                radio.value = JSON.stringify({
+                  stand: slot.stand,
+                  partie: slot.partie,
+                  numero: slot.numero
+                });
+                div.appendChild(radio);
             }
-      
-          } catch {
-            msg.textContent = "Erreur lors de l’envoi. Veuillez réessayer.";
-            msg.style.color = "red";
-            form.querySelector("button").disabled = false;
-          }
+
+            }
+
+            td.appendChild(div);
+          });
+
+          tr.appendChild(td);
         });
-      </script>
-      
+
+        tableBody.appendChild(tr);
+      });
+    }
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
