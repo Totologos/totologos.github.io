@@ -20,9 +20,15 @@ body {
     border: 1px solid #aaa;
     text-align: center;
     vertical-align: top;
-    padding: 5px;
+    padding: 0px;
   }
 
+  td.stand-cell {
+    background-color: #f9f9f9;
+    padding: 10px;
+    text-align: left;
+  }
+  
   th {
     background-color: #f1f3f4;
     font-weight: 500;
@@ -94,6 +100,7 @@ body {
   }
 
 
+
 /* Cellule contenant des créneaux individuels */
 /* Conteneur des sous-cases empilées verticalement */
 .slot-cell {
@@ -109,8 +116,8 @@ body {
     padding: 6px 8px;
     text-align: center;
     font-size: 13px;
-    border-top: 1px solid #ccc;  
-    color: red;
+    border-top: 1px solid #ccc;     
+    color: #aaa;
     margin: 0;              /* ✨ Supprime l’espacement */
     line-height: 1.2;
     border-radius: 0;       /* Supprime les coins arrondis pour un look en bloc */
@@ -121,8 +128,9 @@ body {
     background-color: #D8E199;
     color: #6B7B32;
     font-style: italic;
+    padding: 8px;
   }
-  
+
   /* Bouton radio positionné en bas */
   .slot-cell input[type="radio"] {
     margin-top: 4px;
