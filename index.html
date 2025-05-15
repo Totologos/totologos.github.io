@@ -2,35 +2,83 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Réservation de créneaux</title>
+  <title>Fête de l'école, aidez nous !</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-  <h2>Réservation des créneaux</h2>
+  <h2>Fête de l'école, aidez nous !</h2>
 
   <!-- Message d’attente -->
-  <div id="loading-message">Chargement des créneaux...</div>
+  <div id="loading-message">Chargement du formulaire...</div>
 
   <!-- Contenu caché pendant le chargement -->
   <form id="reservation-form" style="display:none;">
-    <table id="reservation-table">
-      <thead>
-        <tr>
-          <th>Stand</th>
-          <th>1ère partie</th>
-          <th>Entracte</th>
-          <th>2e partie</th>
-        </tr>
-      </thead>
-      <tbody id="table-body">
-        <!-- Rempli dynamiquement -->
-      </tbody>
-    </table>
     <div id="user-info">
-      <input type="text" name="nom" placeholder="Nom" required>
-      <input type="text" name="prenom" placeholder="Prénom" required>
-      <input type="email" name="email" placeholder="Email" required>
+      <h3>Informations personnelles</h3>
+      <p>Merci de remplir vos informations personnelles :</p>
+      <input type="text" name="nom" placeholder="Nom" required><br>
+      <input type="text" name="prenom" placeholder="Prénom" required><br>
+      <input type="email" name="email" placeholder="Email" required><br>
+      <br>
+      <br>
+      <h3>Aidez en journée</h3>
+      <p>Vous pouvez aussi nous aider durant la journée à préparer ou ranger la salle...</p>
+      <div class="radio-group">
+        <span class="radio-label">Le matin (9h-12h) :</span>
+        <label><input type="radio" name="vmatin" value="oui" required> Oui</label>
+        <label><input type="radio" name="vmatin" value="non"> Non</label>
+      </div>
+
+      <div class="radio-group">
+        <span class="radio-label">L'après-midi (14h-17h) :</span>
+        <label><input type="radio" name="vaprem" value="oui" required> Oui</label>
+        <label><input type="radio" name="vaprem" value="non"> Non</label>
+      </div>
+
+      <div class="radio-group">
+        <span class="radio-label">Rangement (après la fête) :</span>
+        <label><input type="radio" name="vsoir" value="oui" required> Oui</label>
+        <label><input type="radio" name="vsoir" value="non"> Non</label>
+      </div>
+ 
+      <br>
+      <br>
+      <h3>Aidez durant la fête</h3>
+      <p>Merci de choisir un ou plusieurs créneaux :</p>
+      </div>
+        <table id="reservation-table">
+          <thead>
+            <tr>
+              <th>Stand</th>
+              <th>1ère partie</th>
+              <th>Entracte</th>
+              <th>2e partie</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- Rempli dynamiquement -->
+          </tbody>
+        </table>
+        
+        <h3>Aider nous en cuisinant </h3>
+                 
+        <p>Vous pouvez nous aider en apportant des gâteaux qui seront vendus sur place...
+        (merci si possible d'indiquer sur une étiquette les ingrédients principaux).
+        Les gateaux sont à déposer à la salle de l'Estuaire le vendredi de 9h à 18h</p>    
+
+          <div class="radio-group">
+            
+            <span class="radio-label">Gateaux :</span>
+            <label><input type="radio" id="gateaux_oui" name="gateau" value="oui" required> Oui</label>
+            <label><input type="radio" id="gateaux_non" name="gateau" value="non"> Non</label>
+          </div>
+
+          <div id="details_gateaux" style="display: none;">
+              <label for="gateaux_details">Quels gâteaux souhaitez-vous cuisiner ?</label><br>
+              <textarea id="gateaux_details" name="gateaux_details" rows="4" cols="50"></textarea><br><br>
+          </div>
+
       <button type="submit">Réserver</button>
     </div>
   </form>
@@ -108,7 +156,7 @@
                 firstEmpty = false;
                 const radio = document.createElement("input");
                 radio.type = "radio";
-                radio.name = `selectedSlot ${partieKey}`;
+                radio.name = `${partieKey}`;
                 radio.value = JSON.stringify({
                   stand,
                   partie: partieKey,  // nom1 / nom2 / nom3
@@ -171,78 +219,41 @@
       form.querySelector("button").disabled = true;
   
       try {
-        const response = await fetch(scriptURL, {
+        const response = await fetch(scriptUrl, {
           method: 'POST',
           body: data
         });
   
         if (response.ok) {
           form.style.display = "none";
-          msg.textContent = "Merci ! Votre réservation a bien été prise en compte.";
-          msg.style.color = "green";
+          loadingMessage.textContent = "Merci ! Votre réservation a bien été prise en compte.";
+          loadingMessage.style.display = "block";
+          reservationForm.style.display = "none";
         } else {
           throw new Error();
         }
   
       } catch {
-        msg.textContent = "Erreur lors de l’envoi. Veuillez réessayer.";
-        msg.style.color = "red";
+        loadingMessage.textContent = "Erreur lors de l’envoi. Veuillez réessayer.";
+        loadingMessage.style.color = "red";
+        loadingMessage.style.display = "block";
+        reservationForm.style.display = "none";
         form.querySelector("button").disabled = false;
       }
     });
-    
-    /*document.getElementById("reservation-form").addEventListener("submit", function (e) {
-      e.preventDefault();
 
-      const form = e.target;
+    document.addEventListener("DOMContentLoaded", function () {
+            const gateauxOui = document.getElementById('gateaux_oui');
+            const gateauxNon = document.getElementById('gateaux_non');
+            const details = document.getElementById('details_gateaux');
 
-      const nom = form.nom.value.trim();
-      const prenom = form.prenom.value.trim();
-      const email = form.email.value.trim();
+            function toggleGateaux() {
+                details.style.display = gateauxOui.checked ? 'block' : 'none';
+            }
 
-      if (!nom || !prenom || !email) {
-        alert("Merci de remplir tous les champs.");
-        return;
-      }
-
-      const selectedRadio = form.querySelector("input[type='radio']:checked");
-      if (!selectedRadio) {
-        alert("Merci de sélectionner un créneau.");
-        return;
-      }
-
-      const selectedSlot = selectedRadio.value;
-
-      const payload = {
-        nom,
-        prenom,
-        email,
-        selectedSlot
-      };
-
-      fetch(scriptUrl, {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-        .then(response => response.json())
-        .then(result => {
-          if (result.success) {
-            alert("Réservation enregistrée !");
-            // Optionnel : recharger les créneaux
-            location.reload();
-          } else {
-            alert("Erreur : " + result.message);
-          }
-        })
-        .catch(error => {
-          console.error("Erreur :", error);
-          alert("Erreur lors de l'envoi des données.");
+            gateauxOui.addEventListener('change', toggleGateaux);
+            gateauxNon.addEventListener('change', toggleGateaux);
         });
-    });*/
-
   </script>
 </body>
 </html>
