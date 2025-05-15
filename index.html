@@ -143,8 +143,55 @@
         tableBody.appendChild(tr);
       });
     }
+
+    // Soumission du formulaire
+    document.getElementById("reservation-form").addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const form = e.target;
+      
+      const nom = form.nom.value.trim();
+      const prenom = form.prenom.value.trim();
+      const email = form.email.value.trim();
+
+      if (!nom || !prenom || !email) {
+        alert("Merci de remplir tous les champs.");
+        return;
+      }
+
+      const selectedRadio = form.querySelector("input[type='radio']:checked");
+      if (!selectedRadio) {
+        alert("Merci de sélectionner un créneau.");
+        return;
+      }
+      
+      const data = new FormData(form);
+  
+      // Empêche double clic
+      form.querySelector("button").disabled = true;
+  
+      try {
+        const response = await fetch(scriptURL, {
+          method: 'POST',
+          body: data
+        });
+  
+        if (response.ok) {
+          form.style.display = "none";
+          msg.textContent = "Merci ! Votre réservation a bien été prise en compte.";
+          msg.style.color = "green";
+        } else {
+          throw new Error();
+        }
+  
+      } catch {
+        msg.textContent = "Erreur lors de l’envoi. Veuillez réessayer.";
+        msg.style.color = "red";
+        form.querySelector("button").disabled = false;
+      }
+    });
     
-    document.getElementById("reservation-form").addEventListener("submit", function (e) {
+    /*document.getElementById("reservation-form").addEventListener("submit", function (e) {
       e.preventDefault();
 
       const form = e.target;
@@ -194,7 +241,7 @@
           console.error("Erreur :", error);
           alert("Erreur lors de l'envoi des données.");
         });
-    });
+    });*/
 
   </script>
 </body>
