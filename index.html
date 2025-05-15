@@ -37,7 +37,7 @@
 </div>
 
   <script>
-    confidential = true; // true si on veut cacher les noms des réservations
+    confidential = false; // true si on veut cacher les noms des réservations
     const scriptUrl = "https://script.google.com/macros/s/AKfycbxER5nolQcpLtEF7Kb728MRkssbt6r72FYDWJP6QXynqZdP_ls-R-79OkZcCksq69BJ/exec"; // Remplace par ton URL
 
     const loadingMessage = document.getElementById("loading-message");
@@ -64,51 +64,55 @@
 
     function buildTable(data) {
       const tableBody = document.getElementById("table-body");
+      tableBody.innerHTML = "";
 
+      // 1. Regrouper les données par stand
       const grouped = {};
       data.forEach(item => {
-        if (!grouped[item.stand]) grouped[item.stand] = {};
-        if (!grouped[item.stand][item.partie]) grouped[item.stand][item.partie] = [];
-        grouped[item.stand][item.partie].push(item);
+        if (!grouped[item.stand]) {
+          grouped[item.stand] = {
+            nom1: [],
+            nom2: [],
+            nom3: []
+          };
+        }
+        grouped[item.stand].nom1.push(item.nom1);
+        grouped[item.stand].nom2.push(item.nom2);
+        grouped[item.stand].nom3.push(item.nom3);
       });
 
+      // 2. Créer une ligne par stand
       Object.keys(grouped).forEach(stand => {
         const tr = document.createElement("tr");
 
         const standCell = document.createElement("td");
+
         standCell.textContent = stand;
-        standCell.classList.add("stand-cell");
         tr.appendChild(standCell);
 
-        ["1ère partie", "Entracte", "2ieme partie"].forEach(partie => {
+        ["nom1", "nom2", "nom3"].forEach(partieKey => {
           const td = document.createElement("td");
-          //td.classList.add("slot-cell");
-
-          const slots = grouped[stand][partie] || [];
-          firstEmpty = true
-          slots.forEach(slot => {
+          const noms = grouped[stand][partieKey];
+          firstEmpty = true;  
+          noms.forEach((nom, index) => {
             const div = document.createElement("div");
             div.classList.add("sub-slot");
-            div.classList.add(slot.nom ? "taken" : "available");
+            
 
-            if (slot.nom) {
-              if(confidential) {
-                div.textContent = `Réservé`;
-              } else {
-                div.textContent = `${slot.prenom} ${slot.nom}`;
-              }
+            if (nom) {
+              div.textContent = confidential ? "Réservé" : nom;
+              div.classList.add("taken");
             } else {
               
               if(firstEmpty) {
                 firstEmpty = false;
                 const radio = document.createElement("input");
                 radio.type = "radio";
-                radio.name = `selectedSlot ${partie}`;
+                radio.name = `selectedSlot ${partieKey}`;
                 radio.value = JSON.stringify({
-                  stand: slot.stand,
-                  partie: slot.partie,
-                  numero: slot.numero
-                });
+                  stand,
+                  partie: partieKey,  // nom1 / nom2 / nom3
+              });
                 // gestion du clic sur le radio permettant de décocher
                 // le dernier radio coché du même groupe
                 radio.addEventListener('click', function() {
@@ -124,11 +128,13 @@
               }
               else
               {
+                div.classList.add("available");
                 div.textContent = `Libre`;
               }
             }
 
             td.appendChild(div);
+          
           });
 
           tr.appendChild(td);

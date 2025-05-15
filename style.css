@@ -131,6 +131,10 @@ body {
     padding: 8px;
   }
 
+  .sub-slot.available {
+    padding: 8px;
+  }
+
   /* Bouton radio positionné en bas */
   .slot-cell input[type="radio"] {
     margin-top: 4px;
