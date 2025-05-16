@@ -21,7 +21,6 @@
       <input type="text" name="prenom" placeholder="Prénom" required><br>
       <input type="email" name="email" placeholder="Email" required><br>
       <br>
-      <br>
       <h3>Aidez en journée</h3>
       <p>Vous pouvez aussi nous aider durant la journée à préparer ou ranger la salle...</p>
       <div class="radio-group">
@@ -41,8 +40,6 @@
         <label><input type="radio" name="vsoir" value="oui" required> Oui</label>
         <label><input type="radio" name="vsoir" value="non"> Non</label>
       </div>
- 
-      <br>
       <br>
       <h3>Aidez durant la fête</h3>
       <p>Merci de choisir un ou plusieurs créneaux :</p>
@@ -60,9 +57,9 @@
             <!-- Rempli dynamiquement -->
           </tbody>
         </table>
-        
+        <br>
         <h3>Aider nous en cuisinant </h3>
-                 
+     
         <p>Vous pouvez nous aider en apportant des gâteaux qui seront vendus sur place...
         (merci si possible d'indiquer sur une étiquette les ingrédients principaux).
         Les gateaux sont à déposer à la salle de l'Estuaire le vendredi de 9h à 18h</p>    
@@ -136,6 +133,7 @@
         const standCell = document.createElement("td");
 
         standCell.textContent = stand;
+        standCell.classList.add("stand-name");
         tr.appendChild(standCell);
 
         ["p1", "p2", "p3"].forEach(partieKey => {
@@ -157,10 +155,7 @@
                 const radio = document.createElement("input");
                 radio.type = "radio";
                 radio.name = `${partieKey}`;
-                radio.value = JSON.stringify({
-                  stand,
-                  partie: partieKey,  // nom1 / nom2 / nom3
-              });
+                radio.value = `${stand}`;
                 // gestion du clic sur le radio permettant de décocher
                 // le dernier radio coché du même groupe
                 radio.addEventListener('click', function() {

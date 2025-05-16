@@ -123,6 +123,9 @@ body {
 }
 
 
+.stand-name {
+  vertical-align: middle;
+}
 
 /* Cellule contenant des créneaux individuels */
 /* Conteneur des sous-cases empilées verticalement */
@@ -162,4 +165,10 @@ body {
   .slot-cell input[type="radio"] {
     margin-top: 4px;
     align-self: center;
+  }
+
+  button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
   }
